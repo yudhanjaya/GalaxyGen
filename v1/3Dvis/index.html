@@ -1,12 +1,19 @@
 <head>
     <script src="//unpkg.com/3d-force-graph@1"></script>
+    <script src="//unpkg.com/d3-dsv"></script>
 
-    <link rel="stylesheet" href="style.css">
+    <script src="https://raw.githubusercontent.com/yudhanjaya/GalaxyGen/master/v1/3Dvis/data-set-loader.js"></script>
+
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/yudhanjaya/GalaxyGen/master/v1/3Dvis/style.css">
 </head>
 
 <body>
     <div id="3d-graph"></div>
-    <button class="full-btn" onClick="useFull()">Full</button>
 
-    <script src="index.js"></script>
+    <div class="graph-data">
+        <span id="graph-data-description"></span>
+        <button class="toggle-data-btn" onClick="toggleData()">Show me something else</button>
+    </div>
+
+    <script src="https://raw.githubusercontent.com/yudhanjaya/GalaxyGen/master/v1/3Dvis/index.js"></script>
 </body>
