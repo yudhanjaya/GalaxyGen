@@ -1,6 +1,6 @@
 
 library(networkD3) #for Simplenetwork
-library(NetworkToolbox)
+
 
 #set up variables
 log <- data.frame(id = 0, type = "", class = "", name = "", source = 0, target = 0, value = 0) #this will contain all our creations
@@ -86,7 +86,8 @@ namer <- function() {
 
 
 
-for (object_count in 1:1000) 
+for (object_count in 1:1000) #adjust this value for more objects. Not all will survive:
+#it should generally be 4x what you expect to see on screen.
   {
      
       object_type <- rnorm(1, mean = 0, sd = 1)
