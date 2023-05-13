@@ -28,4 +28,4 @@ Here's a general breakdown of what the code does:
 
 11. The code exports the civilization data to a CSV file using `generateCivilizationCSV()`.
 
-Overall, the code simulates a fictional universe with stars, planets, and civilizations, and exports the generated data to CSV files for further analysis or usage.
+Next step: visualization.
