@@ -1,6 +1,8 @@
 # GalaxyGen
 
-This code generates a fictional universe with stars, planets, and civilizations, and exports the generated data to CSV files. V1 is the deprecated older version, which I initally wrote in R and tried to visualize in JS.
+This code generates a fictional universe with stars, planets, and civilizations, and exports the generated data to CSV files. Repl here: https://replit.com/@YudhanjayaWije1/Galaxy-Gen?v=1
+
+V1 is the deprecated older version, which I initally wrote in R and tried to visualize in JS.
 
 This version (universe.js) outputs universe.csv and civilizations.csv. 
 
