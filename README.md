@@ -26,7 +26,7 @@ This project doesn't require any build steps or additional dependencies. It uses
    - Left-click and drag to rotate the view
    - Right-click and drag to pan
    - Scroll to zoom in/out
-4. Click on any star, planet, or civilization to view its properties in the right panel.
+   - Double-click on any star, planet, or civilization to view its properties in the right panel.
 5. The bottom right panel shows an overview of the universe.
 6. Click the "Save to CSV" button to download the universe data as a CSV file.
 
