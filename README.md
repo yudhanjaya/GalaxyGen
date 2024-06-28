@@ -28,7 +28,7 @@ This project doesn't require any build steps or additional dependencies. It uses
 4. Click on any star, planet, or civilization to view its properties in the right panel.
 5. The bottom right panel shows an overview of the universe.
 6. Click the "Save to CSV" button to download the universe data as a CSV file.
-7. Big overhaul, see if we can visually make nodes resemble their properties. 
+
 
 ## To-do
 
@@ -37,7 +37,8 @@ This project doesn't require any build steps or additional dependencies. It uses
 3. See if we can make this better resemble a galaxy. Right now, the nature of the Force-directed visualization means that we get irregular galaxies. It would be nice to be able to do elliptical or spiral. Add the supermassive black hole at the center. This may require some overhauls in how stars connect to each other. 
 4. Generation settings.
 5. Improved name generation. V1 and V2 gave me scrabble sounding names which is fair because I lifted quite a bit of the syllables of scrabble words. V3 however gives me extremely boring names over and over again. So see if we can improve this a little bit by adding other languages, other syllable sets. 
-
+6. Big overhaul, see if we can visually make nodes resemble their properties.
+   
 ## Customization
 
 You can customize the universe generation by modifying the following parameters in the `generateAndVisualizeUniverse` function:
