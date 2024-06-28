@@ -1,9 +1,10 @@
 # Galaxy Generator
 
-Generates stars, populates them with planets, and even introduces civilizations that can span multiple worlds. The result is visualized in an interface that kind of mimics low-key terminal vibes but also does contain a proper 3D visualization that you can click, drag, and interact with. Parts of this were written for the follow-up to the Salvage Crew (Pilgrim Machines) but I ended up not using it. This current version is essentially v2 with changes to the names, the rules on how civilizations interacty with planets, and rewritten using Anthropic's Claude 3.5 Sonnet to generate a visualization. 
+Generates stars, populates them with planets, and even introduces civilizations that can span multiple worlds. The result is visualized in an interface that kind of mimics low-key terminal vibes but also does contain a proper 3D visualization that you can click, drag, and interact with. 
 
 ![Screenshot_7](https://github.com/yudhanjaya/GalaxyGen/assets/16394240/9ebd578c-6be0-4f6d-901d-6a10b732d01e)
 
+Parts of this were written for the follow-up to my novel, Pilgrim Machines (a follow-up to the Salvage Crew) but I ended up not using it. This current version is essentially v2 with changes to the names, the rules on how civilizations interacty with planets, and rewritten using Anthropic's Claude 3.5 Sonnet to generate a visualization. 
 
 ## Features
 
