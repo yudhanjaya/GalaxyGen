@@ -1,10 +1,9 @@
-# Universe Generator
+# Galaxy Generator
 
-A 3D interactive visualization of a procedurally generated universe, complete with stars, planets, and civilizations. This is essentially v2 but rewritten using Anthropic's Claude 3.5 Sonnet to generate a visualization. 
+Generates stars, populates them with planets, and even introduces civilizations that can span multiple worlds. The result is visualized in an interface that kind of mimics low-key terminal vibes but also does contain a proper 3d visualization that you can click drag and interact with. This is essentially v2 but rewritten using Anthropic's Claude 3.5 Sonnet to generate a visualization. 
 
-## Description
+![Screenshot_7](https://github.com/yudhanjaya/GalaxyGen/assets/16394240/9ebd578c-6be0-4f6d-901d-6a10b732d01e)
 
-This application generates stars, populates them with planets, and even introduces civilizations that can span multiple worlds. The result is visualized in an interface that kind of mimics low-key terminal vibes but also does contain a proper 3d visualization that you can click drag and interact with 
 
 ## Features
 
@@ -29,6 +28,7 @@ This project doesn't require any build steps or additional dependencies. It uses
 4. Click on any star, planet, or civilization to view its properties in the right panel.
 5. The bottom right panel shows an overview of the universe.
 6. Click the "Save to CSV" button to download the universe data as a CSV file.
+7. Big overhaul, see if we can visually make nodes resemble their properties. 
 
 ## To-do
 
