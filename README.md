@@ -1,33 +1,64 @@
-# GalaxyGen
+# Universe Generator
 
-This code generates a fictional universe with stars, planets, and civilizations, and exports the generated data to CSV files. Repl here: https://replit.com/@YudhanjayaWije1/Galaxy-Gen?v=1
+A 3D interactive visualization of a procedurally generated universe, complete with stars, planets, and civilizations. This is essentially v2 but rewritten using Anthropic's Claude 3.5 Sonnet to generate a visualization. 
 
-V1 is the deprecated older version, which I initally wrote in R and tried to visualize in JS.
+## Description
 
-This version (universe.js) outputs universe.csv and civilizations.csv. 
+This application generates stars, populates them with planets, and even introduces civilizations that can span multiple worlds. The result is visualized in an interface that kind of mimics low-key terminal vibes but also does contain a proper 3d visualization that you can click drag and interact with 
 
-Here's a general breakdown of what the code does:
+## Features
 
-1. The code imports necessary modules: `fs` (Node.js file system module) and `createCsvWriter` (a library for creating CSV files).
+- Procedural generation of stars, planets, and civilizations
+- 3D visualization of the universe using Three.js and 3D Force-Directed Graph
+- Interactive exploration: click on objects to view their properties
+- Distinct visual representation for stars, planets, and civilizations
+- Overview of universe statistics
+- Export universe data to CSV
 
-2. The code defines two classes: `Planet` and `Star`. These classes represent the properties and behavior of planets and stars, respectively. Each instance of a `Planet` or `Star` is initialized with random properties.
+## Installation and Usage
 
-3. The code defines a function `generateCivilizationName()` that generates random civilization names based on predefined prefixes and suffixes.
+This project doesn't require any build steps or additional dependencies. It uses CDN-hosted libraries for simplicity.
 
-4. The code defines the `Civilization` class. Each civilization is initialized with a home planet, home star, activity status, territory, and name. The `Civilization` class has a method `expandTerritory()` that allows a civilization to expand its territory to adjacent stars.
 
-5. The code defines a function `generateUniverse()` that generates a universe with a specified number of stars.
+1. Open the `index.html` file in a web browser.
+2. The universe will be automatically generated and visualized.
+3. Use your mouse to interact with the 3D visualization:
+   - Left-click and drag to rotate the view
+   - Right-click and drag to pan
+   - Scroll to zoom in/out
+4. Click on any star, planet, or civilization to view its properties in the right panel.
+5. The bottom right panel shows an overview of the universe.
+6. Click the "Save to CSV" button to download the universe data as a CSV file.
 
-6. The code defines an `async` function `generateUniverseCSV()` that takes a universe as input and exports the star and planet data to a CSV file using `createCsvWriter`.
+## To-do
 
-7. The code defines a function `generateCivilizations()` that generates a specified number of civilizations in the given universe. Each civilization is created with a random home star and planet. After all civilizations are created, they are allowed to expand their territories to adjacent stars.
+1. Fix data export. Right now, the CSV that is exported is a very simple version of the more detailed CSVs that I generated with V1 and V2. Make it dump to proper csv or graphml.
+2. Data import. So that you can continuously revisit a generated universe. 
+3. See if we can make this better resemble a galaxy. Right now, the nature of the Force-directed visualization means that we get irregular galaxies. It would be nice to be able to do elliptical or spiral. Add the supermassive black hole at the center. This may require some overhauls in how stars connect to each other. 
+4. Generation settings.
+5. Improved name generation. V1 and V2 gave me scrabble sounding names which is fair because I lifted quite a bit of the syllables of scrabble words. V3 however gives me extremely boring names over and over again. So see if we can improve this a little bit by adding other languages, other syllable sets. 
 
-8. The code defines an `async` function `generateCivilizationCSV()` that takes civilizations as input and exports the civilization data to a CSV file using `createCsvWriter`.
+## Customization
 
-9. The code generates a universe with 100 stars and exports the star and planet data to a CSV file using `generateUniverseCSV()`.
+You can customize the universe generation by modifying the following parameters in the `generateAndVisualizeUniverse` function:
 
-10. The code generates a random number of civilizations between 17 and 61, and generates the civilizations using `generateCivilizations()`. It then prints the details of each civilization.
+- Change the number of stars by modifying the argument in `generateUniverse(100)`.
+- Adjust the probability of civilization occurrence in the `attachCivilizations` function.
+- Modify the color scheme by changing the color values in the `processUniverseData` function.
 
-11. The code exports the civilization data to a CSV file using `generateCivilizationCSV()`.
+## Contributing
 
-Next step: visualization.
+Contributions to the Universe Generator are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## Acknowledgments
+
+- [3D Force-Directed Graph](https://github.com/vasturiano/3d-force-graph) library by Vasco Asturiano
+- [Three.js](https://threejs.org/) for 3D rendering
+
+## Contact
+
+If you have any questions, feel free to reach out to [Your Name](mailto:your.email@example.com) or open an issue in this repository.
