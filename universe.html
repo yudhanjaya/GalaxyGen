@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe Generator Terminal</title>
+    <script src="https://unpkg.com/3d-force-graph"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000;
+            color: #00ff00;
+            overflow: hidden;
+        }
+        #container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            height: 100vh;
+            gap: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .terminal-window {
+            background-color: #0a0a0a;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            overflow: hidden;
+        }
+        #graphContainer {
+            grid-row: 1 / 3;
+        }
+        #propertiesPane, #dataPane {
+            display: flex;
+            flex-direction: column;
+        }
+        .window-title {
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        #nodeProperties, #universeData {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 0.9em;
+        }
+        #saveButton {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        #saveButton:hover {
+            background-color: #00cc00;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00ff00;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00cc00;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="graphContainer" class="terminal-window"></div>
+        <div id="propertiesPane" class="terminal-window">
+            <div class="window-title">Node Properties</div>
+            <div id="nodeProperties"></div>
+        </div>
+        <div id="dataPane" class="terminal-window">
+            <div class="window-title">Universe Data Structure</div>
+            <div id="universeData"></div>
+            <button id="saveButton">Save to CSV</button>
+        </div>
+    </div>
+
+    <script>
+        function generateStarName() {
+            const prefixes = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau', 'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega', 'Proxima', 'Ultima', 'Nova', 'Hyper', 'Quantum', 'Cosmic', 'Astro', 'Galactic', 'Stellar', 'Nebula', 'Pulsar', 'Quasar', 'Void', 'Aether', 'Flux', 'Lumen', 'Umbra', 'Radiant', 'Twilight', 'Dawn', 'Dusk', 'Zenith', 'Nadir', 'Apex', 'Core', 'Fringe', 'Frontier', 'Nexus', 'Vertex', 'Vortex', 'Helix', 'Spiral'];
+            const roots = ['Centauri', 'Eridani', 'Cygni', 'Draconis', 'Aquarii', 'Leonis', 'Ursae', 'Scorpii', 'Orionis', 'Pegasi', 'Andromeda', 'Cassiopeia', 'Lyra', 'Auriga', 'Boötes', 'Carina', 'Cepheus', 'Corvus', 'Crux', 'Gemini', 'Hercules', 'Hydra', 'Lacerta', 'Lupus', 'Lynx', 'Ophiuchus', 'Perseus', 'Phoenix', 'Pictor', 'Sagittarius', 'Taurus', 'Vela', 'Volans', 'Vulpecula', 'Xephyr', 'Ystera', 'Zephyrus', 'Aether', 'Chronos', 'Cosmos', 'Erebus', 'Helios', 'Hyperion', 'Khaos', 'Nyx', 'Oranos', 'Tartarus', 'Thalassa', 'Ourania', 'Astraeus', 'Phoebe', 'Rhea', 'Theia', 'Themis', 'Crius', 'Mnemosyne', 'Prometheus', 'Styx', 'Selene', 'Eos'];
+            const suffixes = ['Prime', 'Major', 'Minor', 'Maxima', 'Minima', 'Proxima', 'Ultima', 'Nova', 'Superba', 'Magna', 'Borealis', 'Australis', 'Occidentalis', 'Orientalis', 'Centralis', 'Peripheria', 'Anterior', 'Posterior', 'Superior', 'Inferior', 'Luminosa', 'Obscura', 'Radianta', 'Nebulosa', 'Vortexa', 'Pulsara', 'Quasara', 'Coronae', 'Crucis', 'Draconis', 'Leonis', 'Lupi', 'Serpentis', 'Tauri', 'Ursae', 'Velorum', 'Virginis', 'Carinae', 'Phoenicis', 'Aquilae', 'Ceti', 'Delphini', 'Gruis', 'Hydrae', 'Pavonis', 'Telescopii'];
+            
+            const usePrefix = Math.random() < 0.4;
+            const useSuffix = Math.random() < 0.3;
+            
+            let name = '';
+            if (usePrefix) name += prefixes[Math.floor(Math.random() * prefixes.length)] + ' ';
+            name += roots[Math.floor(Math.random() * roots.length)];
+            if (useSuffix) name += ' ' + suffixes[Math.floor(Math.random() * suffixes.length)];
+            
+            return name;
+        }
+
+        function generatePlanetName() {
+            const prefixes = ['New', 'Old', 'Neo', 'Paleo', 'Micro', 'Macro', 'Hyper', 'Hypo', 'Ultra', 'Infra', 'Xeno', 'Exo', 'Endo', 'Iso', 'Poly', 'Mono', 'Multi', 'Omni', 'Pan', 'Hemi', 'Proto', 'Meta', 'Para', 'Quasi', 'Pseudo', 'Crypto', 'Archaeo', 'Palaeo', 'Meso', 'Neo', 'Tele', 'Holo', 'Nano', 'Pico', 'Femto', 'Atto', 'Zepto', 'Yocto', 'Giga', 'Tera', 'Peta', 'Exa', 'Zetta', 'Yotta', 'Bronto', 'Mega', 'Supra', 'Hyper', 'Super', 'Trans'];
+            const roots = ['Terra', 'Gaia', 'Luna', 'Sol', 'Helios', 'Selene', 'Ares', 'Athena', 'Zeus', 'Hera', 'Poseidon', 'Demeter', 'Apollo', 'Artemis', 'Hephaestus', 'Aphrodite', 'Hermes', 'Dionysus', 'Hades', 'Persephone', 'Chronos', 'Rhea', 'Oceanus', 'Tethys', 'Hyperion', 'Theia', 'Crius', 'Mnemosyne', 'Phoebe', 'Themis', 'Atlas', 'Prometheus', 'Epimetheus', 'Coeus', 'Cronus', 'Iapetus', 'Aegaeon', 'Aether', 'Ananke', 'Erebus', 'Eros', 'Geras', 'Hemera', 'Hypnos', 'Nemesis', 'Nyx', 'Oneiroi', 'Phanes', 'Pontus', 'Tartarus', 'Thalassa', 'Thanatos', 'Uranus', 'Zephyrus', 'Boreas', 'Notus'];
+            const suffixes = ['Prime', 'Secundus', 'Tertius', 'Quartus', 'Quintus', 'Sextus', 'Septimus', 'Octavus', 'Nonus', 'Decimus', 'Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Major', 'Minor', 'Maximus', 'Minimus', 'Magnus', 'Parvus', 'Novus', 'Antiquus', 'Primus', 'Ultimus', 'Borealis', 'Australis', 'Orientalis', 'Occidentalis', 'Centralis', 'Exterior', 'Interior', 'Superior', 'Inferior', 'Proxima', 'Remota', 'Frigidus', 'Calidus', 'Obscurus', 'Luminosus', 'Ferreus', 'Aquaticus', 'Saxeus', 'Crystallus'];
+            
+            const usePrefix = Math.random() < 0.5;
+            const useSuffix = Math.random() < 0.6;
+            
+            let name = '';
+            if (usePrefix) name += prefixes[Math.floor(Math.random() * prefixes.length)] + ' ';
+            name += roots[Math.floor(Math.random() * roots.length)];
+            if (useSuffix) name += ' ' + suffixes[Math.floor(Math.random() * suffixes.length)];
+            
+            return name;
+        }
+
+        function generateCivilizationName() {
+            const prefixes = ["Zor", "Xen", "Vex", "Qua", "Neb", "Lum", "Kry", "Jov", "Hel", "Gal"];
+            const suffixes = ["ians", "ites", "oids", "eans", "ars", "ons", "acks", "ites", "ians", "ese"];
+            return prefixes[Math.floor(Math.random() * prefixes.length)] + suffixes[Math.floor(Math.random() * suffixes.length)];
+        }
+
+        class Planet {
+            constructor(star) {
+                this.name = generatePlanetName();
+                this.star = star;
+                this.size = this.generateSize();
+                this.mass = this.generateMass();
+                this.composition = this.generateComposition();
+                this.atmosphere = this.generateAtmosphere();
+                this.orbit = this.generateOrbit();
+                this.temperature = this.generateTemperature();
+                this.moons = this.generateMoons();
+                this.magneticField = this.generateMagneticField();
+                this.rings = this.generateRings();
+                this.civilization = null;
+            }
+
+            generateSize() {
+                const sizes = ['small', 'medium', 'large'];
+                return sizes[Math.floor(Math.random() * sizes.length)];
+            }
+
+            generateMass() {
+                return +(Math.random() * (5.0 - 0.01) + 0.01).toFixed(2);
+            }
+
+            generateComposition() {
+                const compositions = ['gas', 'ice', 'rocky'];
+                return compositions[Math.floor(Math.random() * compositions.length)];
+            }
+
+            generateAtmosphere() {
+                const atmospheres = ['thin', 'moderate', 'dense'];
+                return atmospheres[Math.floor(Math.random() * atmospheres.length)];
+            }
+
+            generateOrbit() {
+                return Math.random();
+            }
+
+            generateTemperature() {
+                return Math.floor(Math.random() * (500 + 200) - 200);
+            }
+
+            generateMoons() {
+                return Math.floor(Math.random() * 11);
+            }
+
+            generateMagneticField() {
+                return Math.random() < 0.5;
+            }
+
+            generateRings() {
+                return Math.random() < 0.5;
+            }
+        }
+
+        class Star {
+            constructor() {
+                this.name = generateStarName();
+                this.mass = this.generateMass();
+                this.luminosity = this.generateLuminosity();
+                this.temperature = this.generateTemperature();
+                this.size = this.generateSize();
+                this.spectralType = this.generateSpectralType();
+                this.age = this.generateAge();
+                this.rotation = this.generateRotation();
+                this.x = this.generateCoordinate();
+                this.y = this.generateCoordinate();
+                this.z = this.generateCoordinate();
+                this.planets = this.generatePlanets();
+            }
+
+            generateCoordinate() {
+                return Math.random() * 1000 - 500;
+            }
+
+            generateMass() {
+                return +(Math.random() * (50 - 0.08) + 0.08).toFixed(2);
+            }
+
+            generateLuminosity() {
+                return +(Math.random() * (1000 - 0.01) + 0.01).toFixed(2);
+            }
+
+            generateTemperature() {
+                return Math.floor(Math.random() * (50000 - 2000) + 2000);
+            }
+
+            generateSize() {
+                const sizes = ['dwarf', 'medium', 'giant', 'supergiant'];
+                return sizes[Math.floor(Math.random() * sizes.length)];
+            }
+
+            generateSpectralType() {
+                const types = ['O', 'B', 'A', 'F', 'G', 'K', 'M'];
+                return types[Math.floor(Math.random() * types.length)];
+            }
+
+            generateAge() {
+                return +(Math.random() * (13.8 - 0.01) + 0.01).toFixed(2);
+            }
+
+            generateRotation() {
+                return +(Math.random() * (100 - 0.1) + 0.1).toFixed(2);
+            }
+
+            generatePlanets() {
+                let planetCount = Math.floor(Math.random() * 10) + 1;
+                let planets = [];
+                for (let i = 0; i < planetCount; i++) {
+                    planets.push(new Planet(this));
+                }
+                return planets;
+            }
+        }
+
+        class Civilization {
+            constructor(homePlanet) {
+                this.name = generateCivilizationName();
+                this.homePlanet = homePlanet;
+                this.planets = [homePlanet];
+                this.technologicalLevel = Math.floor(Math.random() * 10) + 1;
+            }
+
+            expandTo(planet) {
+                if (!this.planets.includes(planet)) {
+                    this.planets.push(planet);
+                    planet.civilization = this;
+                }
+            }
+        }
+
+        function generateUniverse(numStars) {
+            const universe = [];
+            for (let i = 0; i < numStars; i++) {
+                universe.push(new Star());
+            }
+            return universe;
+        }
+
+        function attachCivilizations(universe) {
+            const civilizations = [];
+            universe.forEach(star => {
+                star.planets.forEach(planet => {
+                    if (Math.random() < 0.1 && !planet.civilization) {
+                        const civ = new Civilization(planet);
+                        civilizations.push(civ);
+                        planet.civilization = civ;
+                    }
+                });
+            });
+
+            civilizations.forEach(civ => {
+                universe.forEach(star => {
+                    if (Math.hypot(star.x - civ.homePlanet.star.x, star.y - civ.homePlanet.star.y, star.z - civ.homePlanet.star.z) < 100) {
+                        star.planets.forEach(planet => {
+                            if (Math.random() < 0.3 && !planet.civilization) {
+                                civ.expandTo(planet);
+                            }
+                        });
+                    }
+                });
+            });
+
+            return civilizations;
+        }
+
+        function processUniverseData(universe, civilizations) {
+            const nodes = [];
+            const links = [];
+
+            universe.forEach(star => {
+                nodes.push({
+                    id: star.name,
+                    name: star.name,
+                    type: 'star',
+                    val: star.mass * 5,
+                    color: '#ffff00',
+                    x: star.x,
+                    y: star.y,
+                    z: star.z,
+                    properties: star
+                });
+
+                star.planets.forEach(planet => {
+                    const planetId = `${star.name}-${planet.name}`;
+                    nodes.push({
+                        id: planetId,
+                        name: planet.name,
+                        type: 'planet',
+                        val: planet.mass * 2,
+                        color: planet.civilization ? '#ff00ff' : '#00ffff',
+                        properties: planet
+                    });
+                    links.push({
+                        source: star.name,
+                        target: planetId
+                    });
+                });
+            });
+
+            civilizations.forEach(civ => {
+                const civId = `civ-${civ.name}`;
+                nodes.push({
+                    id: civId,
+                    name: civ.name,
+                    type: 'civilization',
+                    val: 5,
+                    color: '#ff0000',
+                    properties: civ
+                });
+                civ.planets.forEach(planet => {
+                    links.push({
+                        source: civId,
+                        target: `${planet.star.name}-${planet.name}`
+                    });
+                });
+            });
+
+            return { nodes, links };
+        }
+
+        function updatePropertiesPane(node) {
+            const propertiesPane = document.getElementById('nodeProperties');
+            let html = `<h3>${node.name} (${node.type})</h3>`;
+            for (let [key, value] of Object.entries(node.properties)) {
+                if (typeof value !== 'object' && key !== 'star') {
+                    html += `<p><strong>${key}:</strong> ${value}</p>`;
+                }
+            }
+            if (node.type === 'planet' && node.properties.civilization) {
+                html += `<p><strong>Civilization:</strong> ${node.properties.civilization.name}</p>`;
+            }
+            propertiesPane.innerHTML = html;
+        }
+
+        function updateDataPane(universe, civilizations) {
+            const dataPane = document.getElementById('universeData');
+            let html = `<h3>Universe Overview</h3>`;
+            html += `<p>Stars: ${universe.length}</p>`;
+            html += `<p>Civilizations: ${civilizations.length}</p>`;
+            html += `<h3>Civilizations:</h3>`;
+            civilizations.forEach(civ => {
+                html += `<p>${civ.name} - Planets: ${civ.planets.length}</p>`;
+            });
+            dataPane.innerHTML = html;
+        }
+
+        function saveToCSV(universe, civilizations) {
+            let csv = 'Star Name,Planet Name,Star Mass,Planet Mass,Civilization\n';
+            universe.forEach(star => {
+                star.planets.forEach(planet => {
+                    csv += `${star.name},${planet.name},${star.mass},${planet.mass},${planet.civilization ? planet.civilization.name : 'None'}\n`;
+                });
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "universe_data.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        function generateAndVisualizeUniverse() {
+            const universe = generateUniverse(100);
+            const civilizations = attachCivilizations(universe);
+            const { nodes, links } = processUniverseData(universe, civilizations);
+
+            updateDataPane(universe, civilizations);
+
+            const Graph = ForceGraph3D()
+                (document.getElementById('graphContainer'))
+                .graphData({nodes, links})
+                .nodeLabel('name')
+                .nodeColor(node => node.color)
+                .nodeVal('val')
+                .onNodeClick(node => {
+                    updatePropertiesPane(node);
+                });
+
+            document.getElementById('saveButton').addEventListener('click', () => saveToCSV(universe, civilizations));
+
+            console.log('Graph data:', {nodes, links});
+            console.log('Graph object:', Graph);
+        }
+
+        window.onload = generateAndVisualizeUniverse;
+    </script>
+</body>
+</html>
