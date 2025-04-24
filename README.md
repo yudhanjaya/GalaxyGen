@@ -39,13 +39,12 @@ We define the *rules* for how a star should form, how planets orbit, or what mak
     * `getRandomElement(array)` selects from predefined lists for things like names, traits, or planet features.
     * Probabilities (`Math.random() < probability`) determine events like binary system formation, ring presence, or civilization emergence.
 
-* **Emergent Complexity:** While not explicitly programmed, the interaction of these rules can lead to emergent situations like densely populated clusters, isolated systems, hostile neighbors, or chains of potentially habitable worlds. Exploring the output reveals these unplanned complexities.
+* **Emergent Complexity:** While not explicitly programmed, the interaction of these rules can lead to emergent situations like densely populated clusters, isolated systems, hostile neighbors, or chains of potentially habitable worlds. Exploring the output reveals these unplanned complexities. Simple rules can generate basic narrative descriptions for civilizations, showing how procedural text can add flavor based on generated properties (relevant to the keynote I'm planning).
 
 * **Interactive Visualization (`galaxy-visualization.js`, `index.html`):** The generated data is mapped to visual properties (size, color) and displayed using `3d-force-graph` and `Three.js`, allowing direct interaction and exploration of the procedurally generated universe.
 
-* **Data Persistence (Optional - `galaxy-export.js`):** The generated universe, a complex data structure created procedurally, can be exported, demonstrating how generated content can be saved and potentially reused.
+* **Data Persistence (Optional - `galaxy-export.js`):** The generated universe can be exported, although I don't have an import feature (yet).
 
-* **Narrative Potential (Optional - `galaxy-descriptions.js`):** Simple rules can generate basic narrative descriptions for civilizations, showing how procedural text can add flavor based on generated properties.
 
 ## How to Run
 
