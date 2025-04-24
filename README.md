@@ -12,22 +12,40 @@ and even civilizations!
 
 ![Screenshot_2](https://github.com/user-attachments/assets/b72c7563-28d8-4d62-91c4-3f2aa4eb7c06)
 
+This is essentially the realm of procedural generation. Instead of manually creating every single star and planet (which would take forever!), procedural generation uses **algorithms** (sets of rules and instructions) combined with **randomness** to create complex content automatically. We define the *rules* for how a star should form, how planets orbit, or what makes a planet habitable, and then let the computer generate the specific details based on those rules and random chance. Of course, we take a lot of inspiration from games, especially the bigs ones - Stellaris, Endless Space II, Sins of a Solar Empire, and so on. While we don't have anything remotely as complex as those systems, you'll see certain tocuhes - like the policy selections for alien species - that make a lot of sense once you understand where I'm coming from.
+
+
 ## Features
 
-* **Galaxy Shapes:** Generate galaxies attempting Spiral, Elliptical, or Irregular structures based on different coordinate generation algorithms.
-* **Customizable Parameters:** Use sliders to control the number of stars (up to limits defined in `galaxy-core.js`) and the likelihood of civilizations appearing.
-* **A Proper Detailed Universe:**
-    * **Stars:** Generated with properties like mass, temperature, spectral type (O, B, A, F, G, K, M), luminosity, age, evolutionary stage (main sequence, red giant, etc.), and coordinates based on galaxy type. Binary systems can form.
-    * **Planets:** Generated with type (terrestrial, gas giant, ice giant, molten, rocky, frozen), orbital distance, radius, mass, gravity, basic composition, atmosphere, temperature, water state, moons, day/year length, magnetic field, rings, and a calculated habitability score.
-    * **Civilizations (Optional):** Can emerge on habitable planets, possessing unique names, traits (aggressive, peaceful, etc.), technological levels, government types, expansion policies, and relationships with neighbors.
-* **Interactive 3D View:** Explore the generated galaxy using `3d-force-graph`.
-    * **Navigation:** Left-drag to rotate, Right-drag to pan, Scroll to zoom.
-    * **Interaction:** Hover over objects for tooltips, Click objects to select them.
-* **Information Sidebar:**
-    * View detailed properties of selected objects (stars, planets, civilizations).
-    * Tabs provide Overview, Details, and potentially narrative Descriptions (if `galaxy-descriptions.js` is present).
-    * See overall galaxy statistics and generation controls.
-* **Data Export (Optional):** If `galaxy-export.js` is present, export galaxy data to CSV or JSON.
+
+* **Parameterized Generation:** Control high-level outcomes using simple UI parameters:
+    * **Galaxy Shape (`index.html`, `galaxy-classes.js`):** Choose between Spiral, Elliptical, or Irregular. Each uses a different mathematical algorithm in `galaxy-classes.js` (`generateSpiralCoordinates`, `generateEllipticalCoordinates`, etc.) to determine the initial placement of stars, demonstrating how different rule sets create distinct large-scale structures.
+    * **Star Count (`index.html`, `galaxy-generator.js`):** Directly sets the target number of stars, influencing galaxy density. The actual number is capped by `LIMITS.MAX_STARS` in `galaxy-core.js`.
+    * **Civilization Chance (`index.html`, `galaxy-generator.js`):** A probability factor influencing how likely civilizations are to emerge on suitable planets, demonstrating probability-based procedural content.
+
+* **Rule-Based Object Creation (`galaxy-classes.js`):** Stars, planets, and civilizations are constructed based on rules:
+    * **Stars:** Mass influences temperature, luminosity, spectral type (OBAFGKM), size, and lifespan/evolutionary stage (main sequence, giant, dwarf, etc.). Binary systems can randomly form.
+    * **Planets:** Type (terrestrial, gas giant, etc.) is determined by rules based on orbital distance and star properties. Size, mass, gravity, composition, atmosphere, temperature, water presence, moons, rings, and habitability are then calculated based on further rules and constrained randomness.
+    * **Civilizations:** Randomly assigned traits, government types, and tech levels influence their behavior and relationships, showcasing procedural agent characteristics.
+
+* **Layered Dependencies (`galaxy-generator.js`):** The generation process builds complexity in layers:
+    * Galaxy shape influences star placement.
+    * Star properties (luminosity, age) influence planet properties (temperature, habitability).
+    * Planet properties (habitability) influence civilization placement.
+    * Civilization properties influence their relationships and expansion.
+
+* **Controlled Randomness (`galaxy-core.js`, `galaxy-names.js`, `galaxy-classes.js`):** Random numbers are used throughout, but within specific constraints or based on probabilities, ensuring variety without complete chaos:
+    * `getRandomNumber(min, max)` is used for values like mass, age, temperature variations.
+    * `getRandomElement(array)` selects from predefined lists for things like names, traits, or planet features.
+    * Probabilities (`Math.random() < probability`) determine events like binary system formation, ring presence, or civilization emergence.
+
+* **Emergent Complexity:** While not explicitly programmed, the interaction of these rules can lead to emergent situations like densely populated clusters, isolated systems, hostile neighbors, or chains of potentially habitable worlds. Exploring the output reveals these unplanned complexities.
+
+* **Interactive Visualization (`galaxy-visualization.js`, `index.html`):** The generated data is mapped to visual properties (size, color) and displayed using `3d-force-graph` and `Three.js`, allowing direct interaction and exploration of the procedurally generated universe.
+
+* **Data Persistence (Optional - `galaxy-export.js`):** The generated universe, a complex data structure created procedurally, can be exported, demonstrating how generated content can be saved and potentially reused.
+
+* **Narrative Potential (Optional - `galaxy-descriptions.js`):** Simple rules can generate basic narrative descriptions for civilizations, showing how procedural text can add flavor based on generated properties.
 
 ## How to Run
 
@@ -35,35 +53,6 @@ and even civilizations!
 2.  **Directory:** Place all files (`index.html`, `galaxy-core.js`, etc.) together in the **same folder**.
 3.  **Browser:** Open `index.html` in a modern web browser (Chrome, Firefox, Edge recommended). An internet connection is needed for external libraries (`Three.js`, `3d-force-graph`).
 4.  **Explore:** Use the controls (now in the bottom-right panel) to generate galaxies and the mouse/sidebar to explore!
-
-## How does this work?
-
-This is essentially the realm of procedural generation. Instead of manually creating every single star and planet (which would take forever!), procedural generation uses **algorithms** (sets of rules and instructions) combined with **randomness** to create complex content automatically. We define the *rules* for how a star should form, how planets orbit, or what makes a planet habitable, and then let the computer generate the specific details based on those rules and random chance.
-
-This project shows a few key proc-gen ideas (and some that are salient for my lecture):
-
-1.  **Parameters & Randomness (`index.html`, `galaxy-core.js`, `galaxy-generator.js`):**
-    * The UI sliders (`index.html`) provide high-level **parameters**.
-    * `galaxy-generator.js` reads these parameters.
-    * Throughout the code (especially in `galaxy-classes.js`), `window.GalaxyCore.getRandomNumber()` and `window.GalaxyCore.getRandomElement()` are used to introduce **controlled randomness**. Notice how random numbers aren't just picked wildly, but often within specific ranges or based on probabilities (like `civProbability`).
-
-2.  **Rule-Based Systems (`galaxy-classes.js`):**
-    * Look at the `Star` and `Planet` classes. Their constructors are full of **rules**.
-    * *Example Rule (Planet Type):* The `determinePlanetType` method uses rules based on orbital distance and star luminosity to decide if a planet is likely molten, terrestrial, gas giant, etc.
-    * *Example Rule (Star Evolution):* `calculateEvolution` uses the star's mass and age to determine if it's main-sequence, a red giant, or another stage.
-
-3.  **Layered Generation (`galaxy-generator.js`):**
-    * Generation happens in **steps**: Stars first, then planets around stars, then civilizations on habitable planets.
-    * This layering allows dependencies: planet generation depends on the star's properties; civilization generation depends on the planet's properties.
-
-4.  **Shaping Functions (`galaxy-classes.js` - `generateCoordinates` methods):**
-    * The `generateSpiralCoordinates` and `generateEllipticalCoordinates` methods use mathematical functions (trigonometry, Gaussian distribution) combined with parameters and randomness to **shape** the distribution of stars, attempting to create something other than a uniform random cloud. This is a common technique in proc-gen.
-
-5.  **Data Representation (`galaxy-classes.js`):**
-    * The `Star`, `Planet`, `Civilization`, and `Artifact` classes act as **data structures** or blueprints. The proc-gen process fills in the specific properties for each instance of these classes.
-
-6.  **Emergence:**
-    * While not explicitly programmed, you might observe **emergent** patterns. Dense star clusters might form naturally from the coordinate algorithms. Chains of habitable planets might appear. Conflicts between civilizations with opposing traits might seem inevitable, even though only their initial relationship was determined by rules. This is the magic of complex systems arising from simpler rules!
 
 
 ## Exploring the Code
