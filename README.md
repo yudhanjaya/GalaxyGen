@@ -57,6 +57,8 @@ We define the *rules* for how a star should form, how planets orbit, or what mak
 
 ## Exploring the Code
 
+Want to modify it? Go ahead.
+
 * **`galaxy-core.js`:** Start here to see base constants (like `LIMITS`, `SPECTRAL_TYPES`) and utility functions. Changing constants here directly affects generation outcomes.
 * **`galaxy-classes.js`:** The heart of the generation logic. Look at the `constructor` and helper methods within each class (`Star`, `Planet`, `Civilization`) to understand the rules. See how coordinate generation differs for galaxy types.
 * **`galaxy-generator.js`:** See how the overall process is orchestrated step-by-step and how modules are used together.
