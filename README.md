@@ -12,7 +12,7 @@ and even civilizations!
 
 ![Screenshot_2](https://github.com/user-attachments/assets/b72c7563-28d8-4d62-91c4-3f2aa4eb7c06)
 
-This is essentially the realm of procedural generation. Instead of manually creating every single star and planet (which would take forever!), procedural generation uses **algorithms** (sets of rules and instructions) combined with **randomness** to create complex content automatically. We define the *rules* for how a star should form, how planets orbit, or what makes a planet habitable, and then let the computer generate the specific details based on those rules and random chance. Of course, we take a lot of inspiration from games, especially the bigs ones - Stellaris, Endless Space II, Sins of a Solar Empire, and so on. While we don't have anything remotely as complex as those systems, you'll see certain tocuhes - like the policy selections for alien species - that make a lot of sense once you understand where I'm coming from.
+We define the *rules* for how a star should form, how planets orbit, or what makes a planet habitable, and then let the program generate the specific details based on rulesets and random chance. Of course, we take a lot of inspiration from games, especially the bigs ones - Stellaris, Endless Space II, Sins of a Solar Empire, and so on, as well as the Wikipedia page on star distributions. While we don't have anything remotely as complex as those game systems, you'll see certain tocuhes - like the policy selections for alien species - that make a lot of sense once you understand where I'm coming from.
 
 
 ## Features
