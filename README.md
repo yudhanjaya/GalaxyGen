@@ -4,15 +4,19 @@
 
 This project is an interactive **procedural galaxy generator** built with JavaScript, HTML, and CSS. It creates unique, explorable 3D universes filled with stars, planets, and even fledgling civilizations right in your web browser.
 
-I built the original version in R; then over the years I made a couple of slow attempts to move everything to JavaScript. This version is the latest and greatest, built largely for a keynote at the University of Bergen in 2025. 
+I built the original version in R; then over the years I made a couple of slow attempts to move everything to JavaScript. This version is the latest and greatest, built largely for a keynote at the University of Bergen in 2025. Look! We have stars, planets . . . 
 
+![Screenshot_1](https://github.com/user-attachments/assets/bcfdf6d4-64f3-477e-860e-039ca8b65730)
 
+and even civilizations!
+
+![Screenshot_2](https://github.com/user-attachments/assets/b72c7563-28d8-4d62-91c4-3f2aa4eb7c06)
 
 ## Features
 
 * **Galaxy Shapes:** Generate galaxies attempting Spiral, Elliptical, or Irregular structures based on different coordinate generation algorithms.
 * **Customizable Parameters:** Use sliders to control the number of stars (up to limits defined in `galaxy-core.js`) and the likelihood of civilizations appearing.
-* **Detailed Universe:**
+* **A Proper Detailed Universe:**
     * **Stars:** Generated with properties like mass, temperature, spectral type (O, B, A, F, G, K, M), luminosity, age, evolutionary stage (main sequence, red giant, etc.), and coordinates based on galaxy type. Binary systems can form.
     * **Planets:** Generated with type (terrestrial, gas giant, ice giant, molten, rocky, frozen), orbital distance, radius, mass, gravity, basic composition, atmosphere, temperature, water state, moons, day/year length, magnetic field, rings, and a calculated habitability score.
     * **Civilizations (Optional):** Can emerge on habitable planets, possessing unique names, traits (aggressive, peaceful, etc.), technological levels, government types, expansion policies, and relationships with neighbors.
