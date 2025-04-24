@@ -4,10 +4,6 @@
 
 This project is an interactive **procedural galaxy generator** built with JavaScript, HTML, and CSS. It creates unique, explorable 3D universes filled with stars, planets, and even fledgling civilizations right in your web browser.
 
-
-https://github.com/user-attachments/assets/06d96fce-a27a-4a97-8984-97ef0b4c3fe5
-
-
 I built the original version in R; then over the years I made a couple of slow attempts to move everything to JavaScript. The idea was that I'd eventually use it for a novel I was writing (Salvage Crew, then Pilgrim Machines) but I never did. This version, resurrected and rewritten, is the latest and greatest, rebuilt largely for a keynote at the University of Bergen in 2025. Look! We have stars, planets . . . 
 
 ![Screenshot_1](https://github.com/user-attachments/assets/bcfdf6d4-64f3-477e-860e-039ca8b65730)
@@ -18,6 +14,8 @@ and even civilizations!
 
 We define the *rules* for how a star should form, how planets orbit, or what makes a planet habitable, and then let the program generate the specific details based on rulesets and random chance. Of course, we take a lot of inspiration from games, especially the bigs ones - Stellaris, Endless Space II, Sins of a Solar Empire, and so on, as well as the Wikipedia page on star distributions. While we don't have anything remotely as complex as those game systems, you'll see certain tocuhes - like the policy selections for alien species - that make a lot of sense once you understand where I'm coming from.
 
+Here's a (low-res) demo of it in action: 
+https://github.com/user-attachments/assets/06d96fce-a27a-4a97-8984-97ef0b4c3fe5
 
 ## Features
 
