@@ -4,6 +4,10 @@
 
 This project is an interactive **procedural galaxy generator** built with JavaScript, HTML, and CSS. It creates unique, explorable 3D universes filled with stars, planets, and even fledgling civilizations right in your web browser.
 
+
+https://github.com/user-attachments/assets/06d96fce-a27a-4a97-8984-97ef0b4c3fe5
+
+
 I built the original version in R; then over the years I made a couple of slow attempts to move everything to JavaScript. The idea was that I'd eventually use it for a novel I was writing (Salvage Crew, then Pilgrim Machines) but I never did. This version, resurrected and rewritten, is the latest and greatest, rebuilt largely for a keynote at the University of Bergen in 2025. Look! We have stars, planets . . . 
 
 ![Screenshot_1](https://github.com/user-attachments/assets/bcfdf6d4-64f3-477e-860e-039ca8b65730)
@@ -20,7 +24,7 @@ We define the *rules* for how a star should form, how planets orbit, or what mak
 
 * **Parameterized Generation:** Control high-level outcomes using simple UI parameters:
     * **Galaxy Shape (`index.html`, `galaxy-classes.js`):** Choose between Spiral, Elliptical, or Irregular. Each uses a different mathematical algorithm in `galaxy-classes.js` (`generateSpiralCoordinates`, `generateEllipticalCoordinates`, etc.) to determine the initial placement of stars, demonstrating how different rule sets create distinct large-scale structures.
-    * **Star Count (`index.html`, `galaxy-generator.js`):** Directly sets the target number of stars, influencing galaxy density. The actual number is capped by `LIMITS.MAX_STARS` in `galaxy-core.js`.
+    * **Star Count (`index.html`, `galaxy-generator.js`):** Directly sets the target number of stars, influencing galaxy density. The actual number is capped by `LIMITS.MAX_STARS` in `galaxy-core.js`. Past a certain amount, the slowdown is horrendous.
     * **Civilization Chance (`index.html`, `galaxy-generator.js`):** A probability factor influencing how likely civilizations are to emerge on suitable planets, demonstrating probability-based procedural content.
 
 * **Rule-Based Object Creation (`galaxy-classes.js`):** Stars, planets, and civilizations are constructed based on rules:
