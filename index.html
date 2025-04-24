@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yudha's Starmap</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/3d-force-graph@1.70.10/dist/3d-force-graph.min.js"></script>
+
+    <style>
+        /* Basic page setup */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+            background-color: #000;
+            color: #b3e5fc;
+            overflow: hidden; /* Prevent body scroll */
+        }
+
+        /* Main grid layout: 3 parts graph, 1 part sidebar (2 rows) */
+        #container {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            grid-template-rows: 1fr 1fr; /* Sidebar split into two rows */
+            height: 100vh;
+            gap: 5px;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Styling for the main panels */
+        .terminal-window {
+            background-color: rgba(10, 10, 16, 0.85);
+            border: 1px solid #64b5f6;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 149, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevent individual panels from scrolling, content inside will scroll */
+        }
+
+        /* Graph container specific styles */
+        #graphContainer {
+            grid-row: 1 / 3; /* Span both rows */
+            position: relative; /* Needed for absolute positioning of children (like tooltip) */
+            overflow: hidden; /* Clip graph rendering within bounds */
+        }
+
+        /* Tooltip for node hover info */
+        #tooltip {
+            position: absolute; /* Position relative to graphContainer */
+            background-color: rgba(0, 0, 0, 0.85);
+            border: 1px solid #64b5f6;
+            border-radius: 4px;
+            padding: 8px 10px;
+            color: #fff;
+            font-size: 0.8em;
+            pointer-events: none; /* Allow mouse events to pass through */
+            z-index: 100; /* Ensure tooltip is above graph */
+            max-width: 300px;
+            display: none; /* Hidden by default */
+            box-shadow: 0 0 10px rgba(0, 149, 255, 0.5);
+            white-space: pre-wrap;
+            line-height: 1.3;
+        }
+
+        /* Common styles for window titles */
+        .window-title {
+            border-bottom: 1px solid #64b5f6;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #29b6f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0; /* Prevent title from shrinking */
+        }
+
+        /* Make content areas within sidebars scrollable */
+        #propertiesPane > div:not(.window-title):not(.tab-container),
+        #dataPane > div:not(.window-title):not(.button-container):not(#controls):not(.legend) {
+             flex-grow: 1; /* Take available space */
+             overflow-y: auto; /* Enable vertical scrolling ONLY for content */
+             font-size: 0.9em;
+             padding-right: 5px; /* Space for scrollbar */
+         }
+
+        /* Container for export buttons */
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px; /* Space above buttons */
+            flex-shrink: 0; /* Prevent buttons from shrinking */
+        }
+
+        /* General button style */
+        .control-button {
+            background-color: #0277bd;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: inherit; /* Use body font */
+            font-weight: bold;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        .control-button:disabled {
+             background-color: #555;
+             cursor: not-allowed;
+             opacity: 0.6;
+         }
+        .control-button:hover:not(:disabled) {
+            background-color: #039be5;
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a1a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #0277bd; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #039be5; }
+
+        /* Properties Pane Tabs */
+        .tab-container {
+            display: flex;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #64b5f6; /* Underline the tab row */
+        }
+        .tab {
+            padding: 6px 12px;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent; /* Space for active indicator */
+            margin-right: 5px;
+            white-space: nowrap;
+            color: #90caf9;
+            transition: all 0.2s;
+        }
+        .tab:hover {
+            color: #e1f5fe;
+            border-bottom-color: #64b5f6; /* Indicate hover */
+        }
+        .tab.active {
+            color: #fff;
+            border-bottom-color: #29b6f6; /* Active indicator */
+            font-weight: bold;
+        }
+        /* Tab content panels */
+        .tab-content {
+            display: none; /* Hidden by default */
+            padding: 10px 5px 10px 0;
+        }
+        .tab-content.active {
+            display: block; /* Shown when active */
+        }
+
+        /* Styling for property groups and rows */
+        .property-group {
+            margin-bottom: 15px;
+            border-left: 3px solid #0277bd; /* Accent line */
+            padding-left: 10px;
+        }
+        .property-group h3, .property-group h4 {
+            margin: 0 0 8px 0;
+            color: #29b6f6;
+            font-size: 1.05em;
+            font-weight: bold;
+        }
+        .property-group h4 { /* Sub-headings */
+            color: #64b5f6;
+            font-size: 0.95em;
+            margin-top: 10px;
+        }
+        /* Row layout for Label: Value */
+        .property-row {
+            display: flex;
+            margin-bottom: 4px;
+            line-height: 1.4;
+            align-items: flex-start;
+        }
+        .property-label {
+            width: 110px;
+            min-width: 110px; /* Prevent shrinking */
+            flex-shrink: 0;
+            color: #90caf9;
+            padding-right: 10px;
+            font-size: 0.9em;
+        }
+        .property-value {
+            flex-grow: 1; /* Take remaining space */
+            word-break: break-word; /* Wrap long values */
+            overflow-wrap: break-word;
+            font-size: 0.9em;
+        }
+
+        /* Styling for the visualization legend */
+        .legend {
+            /* Removed absolute positioning */
+            background-color: rgba(10, 10, 16, 0.85);
+            border: 1px solid #64b5f6;
+            border-radius: 5px;
+            padding: 10px 12px;
+            font-size: 0.75em;
+            color: #b3e5fc;
+            margin-top: 15px; /* Space above buttons */
+            flex-shrink: 0; /* Prevent legend from shrinking */
+        }
+        .legend h4 {
+            margin: 0 0 6px 0;
+            color: #29b6f6;
+            border-bottom: 1px solid #64b5f6;
+            padding-bottom: 4px;
+            font-size: 1.1em;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color { /* The color swatch */
+            width: 12px;
+            height: 12px;
+            margin-right: 8px;
+            border: 1px solid #aaa;
+            flex-shrink: 0;
+        }
+        /* Specific shapes/styles for legend items */
+        .legend-item.star .legend-color { border-radius: 50%; }
+        .legend-item.planet .legend-color { border-radius: 50%; }
+        .legend-item.civilization .legend-color { transform: rotate(45deg); border-radius: 0; width: 10px; height: 10px; }
+        .legend-item.megastructure .legend-color { border-radius: 2px; }
+
+        /* Generation controls container */
+        #controls {
+            /* Removed absolute positioning */
+            background-color: rgba(10, 10, 16, 0.85);
+            border: 1px solid #64b5f6;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 0.85em;
+            margin-bottom: 15px; /* Space below controls */
+            flex-shrink: 0; /* Prevent controls from shrinking */
+        }
+        .control-group {
+            margin-bottom: 15px; /* Space between control groups */
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #90caf9;
+            font-weight: bold;
+        }
+        /* Slider layout */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="range"] {
+            flex-grow: 1; /* Slider takes available space */
+            cursor: pointer;
+            height: 5px; /* Thin slider */
+        }
+        .slider-value { /* Display for slider value */
+            width: 45px;
+            text-align: right;
+            font-weight: bold;
+            color: #fff;
+        }
+        /* Dropdown style */
+        select {
+            background-color: #0a0a1a;
+            color: #b3e5fc;
+            border: 1px solid #64b5f6;
+            padding: 6px 8px;
+            width: 100%;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 0.9em;
+        }
+
+        /* Loading overlay styles */
+        .loading-overlay {
+            position: fixed; /* Cover whole screen */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.92);
+            display: flex; /* Center content */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* Ensure it's on top */
+            transition: opacity 0.3s; /* Fade out */
+        }
+        .loading-text { color: #29b6f6; font-size: 1.6em; margin-bottom: 20px; }
+        .loading-progress { width: 320px; height: 12px; background-color: #1a237e; border-radius: 6px; overflow: hidden; border: 1px solid #64b5f6; }
+        .loading-progress-bar { height: 100%; background-color: #448aff; width: 0%; transition: width 0.2s ease-out; border-radius: 6px; }
+        .loading-detail { color: #90caf9; margin-top: 15px; font-size: 0.9em; height: 1.2em; text-align: center; width: 90%; }
+
+        /* Civilization description text style */
+        .species-description { line-height: 1.5; text-align: left; margin-bottom: 15px; color: #e1f5fe; white-space: pre-wrap; }
+
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay" style="display: flex;"> <h2 class="loading-text">Initializing Galaxy...</h2>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="loadingProgressBar"></div>
+        </div>
+        <div class="loading-detail" id="loadingDetail">Loading core systems...</div>
+    </div>
+
+    <div id="container">
+
+        <div id="graphContainer" class="terminal-window">
+            <div id="tooltip"></div>
+            </div> <div id="propertiesPane" class="terminal-window">
+            <div class="window-title">
+                <span id="propertiesTitle">Node Properties</span>
+                <button id="focusButton" class="control-button" style="display: none;">Focus</button>
+            </div>
+            <div class="tab-container">
+                <div class="tab active" data-tab="overview">Overview</div>
+                <div class="tab" data-tab="details">Details</div>
+                <div class="tab" data-tab="description" style="display: none;">Description</div>
+            </div>
+            <div>
+                <div class="tab-content active" id="overviewTab"><p>Select an object...</p></div>
+                <div class="tab-content" id="detailsTab"></div>
+                <div class="tab-content" id="descriptionTab"></div>
+            </div>
+        </div> <div id="dataPane" class="terminal-window">
+            <div class="window-title">Galaxy Controls & Stats</div>
+
+            <div id="controls">
+                <div class="control-group">
+                    <label for="galaxyType">Galaxy Type:</label>
+                    <select id="galaxyType">
+                        <option value="spiral" selected>Spiral</option>
+                        <option value="elliptical">Elliptical</option>
+                        <option value="irregular">Irregular</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="starCount">Stars:</label>
+                    <div class="slider-container">
+                        <input type="range" id="starCount" min="50" max="5000" value="500" step="50">
+                        <div class="slider-value" id="starCountValue">500</div>
+                    </div>
+                </div>
+                <div class="control-group">
+                     <label for="civProbability">Civilization Chance:</label>
+                    <div class="slider-container">
+                        <input type="range" id="civProbability" min="5" max="30" value="10" step="1">
+                        <div class="slider-value" id="civProbabilityValue">10%</div>
+                    </div>
+                </div>
+                <button id="generateButton" class="control-button">Generate New Galaxy</button>
+            </div>
+
+            <div id="universeData"><p>Generating galaxy...</p></div>
+
+            <div class="legend">
+                <h4>Legend</h4>
+                <div class="legend-item star"><div class="legend-color" style="background-color: #FFF4EA;"></div><span>Stars</span></div>
+                <div class="legend-item planet"><div class="legend-color" style="background-color: #00BFFF;"></div><span>Habitable Planets</span></div>
+                <div class="legend-item planet"><div class="legend-color" style="background-color: #888888;"></div><span>Other Planets</span></div>
+                <div class="legend-item civilization"><div class="legend-color" style="background-color: #FF4500;"></div><span>Civilizations</span></div>
+                <div class="legend-item megastructure"><div class="legend-color" style="background-color: #7851A9;"></div><span>Megastructures</span></div>
+            </div>
+
+            <div class="button-container">
+                <button id="saveCsvButton" class="control-button" disabled title="Export module not loaded">Export CSV</button>
+                <button id="saveJsonButton" class="control-button" disabled title="Export module not loaded">Export JSON</button>
+            </div>
+        </div> </div> <script>
+        (function() {
+            // Keep reference to original console methods
+            const originalConsole = { log: console.log.bind(console), error: console.error.bind(console), warn: console.warn.bind(console), info: console.info.bind(console) };
+            const MAX_LOG_ENTRIES = 150; // Limit number of entries in debug panel if it were visible
+
+            // Function to format arguments for logging
+            function formatArg(arg) {
+                 if (arg instanceof Error) return `${arg.name}: ${arg.message}\n${arg.stack}`;
+                 if (typeof arg === 'object' && arg !== null) { try { return JSON.stringify(arg); } catch (e) { return '[Unserializable Object]'; } }
+                 if (typeof arg === 'undefined') return 'undefined'; if (arg === null) return 'null'; return String(arg);
+            }
+
+            // Function to intercept console calls
+            function logToDebug(level, ...args) {
+                originalConsole[level](...args); // Call original first
+                // Logging to the (now removed) debug panel is commented out, but interception remains useful for debugging
+                /*
+                const debugLog = document.getElementById('debug-log');
+                if (debugLog && debugLog.style.display !== 'none') { // Check visibility if panel existed
+                    const message = args.map(formatArg).join(' ');
+                    const entry = document.createElement('div'); entry.className = `log-${level}`;
+                    let color = '#ffffff'; if (level === 'error') color = '#ff6b6b'; else if (level === 'warn') color = '#feca57'; else if (level === 'info') color = '#54a0ff';
+                    entry.style.color = color; entry.textContent = `[${level.toUpperCase()}] ${new Date().toLocaleTimeString()} - ${message}`;
+                    debugLog.appendChild(entry); debugLog.scrollTop = debugLog.scrollHeight;
+                    while (debugLog.childNodes.length > MAX_LOG_ENTRIES) { debugLog.removeChild(debugLog.firstChild); }
+                }
+                */
+            }
+
+            // Override console methods (optional - can remove if console logging is not needed)
+            console.log = (...args) => logToDebug('log', ...args);
+            console.error = (...args) => logToDebug('error', ...args);
+            console.warn = (...args) => logToDebug('warn', ...args);
+            console.info = (...args) => logToDebug('info', ...args);
+
+            // Global error handlers (still useful for catching errors)
+            window.addEventListener('error', function(event) {
+                // Use original console.error to avoid potential loops if logging itself fails
+                 originalConsole.error('Unhandled Error:', event.message, 'at', event.filename, `${event.lineno}:${event.colno}`, event.error);
+             });
+            window.addEventListener('unhandledrejection', function(event) {
+                 originalConsole.error('Unhandled Promise Rejection:', event.reason);
+             });
+
+            // Debug toggle button setup removed
+        })();
+    </script>
+
+    <script src="galaxy-core.js" defer></script>
+    <script src="galaxy-names.js" defer></script>
+    <script src="galaxy-classes.js" defer></script>
+    <script src="galaxy-generator.js" defer></script>
+    <script src="galaxy-visualization.js" defer></script>
+    <script src="galaxy-ui.js" defer></script>
+
+    </body>
+</html>

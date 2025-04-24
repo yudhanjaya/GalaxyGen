@@ -1,66 +1,73 @@
-# Galaxy Generator
+# Yudha's Starmap
 
-Generates stars, populates them with planets, and even introduces civilizations that can span multiple worlds. The result is visualized in an interface that kind of mimics low-key terminal vibes but also does contain a proper 3D visualization that you can click, drag, and interact with. 
+## Welcome!
 
-![Screenshot_7](https://github.com/yudhanjaya/GalaxyGen/assets/16394240/9ebd578c-6be0-4f6d-901d-6a10b732d01e)
+This project is an interactive **procedural galaxy generator** built with JavaScript, HTML, and CSS. It creates unique, explorable 3D universes filled with stars, planets, and even fledgling civilizations right in your web browser.
 
-Parts of this were written for the follow-up to my novel, Pilgrim Machines (a follow-up to the Salvage Crew) but I ended up not using it. This current version is essentially v2 with changes to the names, the rules on how civilizations interacty with planets, and rewritten using Anthropic's Claude 3.5 Sonnet to generate a visualization. 
+I built the original version in R; then over the years I made a couple of slow attempts to move everything to JavaScript. This version is the latest and greatest, built largely for a keynote at the University of Bergen in 2025. 
+
+
 
 ## Features
 
-- Procedural generation of stars, planets, and civilizations
-- 3D visualization of the universe using Three.js and 3D Force-Directed Graph
-- Interactive exploration: click on objects to view their properties
-- Distinct visual representation for stars, planets, and civilizations
-- Overview of universe statistics
-- Export universe data to CSV
+* **Galaxy Shapes:** Generate galaxies attempting Spiral, Elliptical, or Irregular structures based on different coordinate generation algorithms.
+* **Customizable Parameters:** Use sliders to control the number of stars (up to limits defined in `galaxy-core.js`) and the likelihood of civilizations appearing.
+* **Detailed Universe:**
+    * **Stars:** Generated with properties like mass, temperature, spectral type (O, B, A, F, G, K, M), luminosity, age, evolutionary stage (main sequence, red giant, etc.), and coordinates based on galaxy type. Binary systems can form.
+    * **Planets:** Generated with type (terrestrial, gas giant, ice giant, molten, rocky, frozen), orbital distance, radius, mass, gravity, basic composition, atmosphere, temperature, water state, moons, day/year length, magnetic field, rings, and a calculated habitability score.
+    * **Civilizations (Optional):** Can emerge on habitable planets, possessing unique names, traits (aggressive, peaceful, etc.), technological levels, government types, expansion policies, and relationships with neighbors.
+* **Interactive 3D View:** Explore the generated galaxy using `3d-force-graph`.
+    * **Navigation:** Left-drag to rotate, Right-drag to pan, Scroll to zoom.
+    * **Interaction:** Hover over objects for tooltips, Click objects to select them.
+* **Information Sidebar:**
+    * View detailed properties of selected objects (stars, planets, civilizations).
+    * Tabs provide Overview, Details, and potentially narrative Descriptions (if `galaxy-descriptions.js` is present).
+    * See overall galaxy statistics and generation controls.
+* **Data Export (Optional):** If `galaxy-export.js` is present, export galaxy data to CSV or JSON.
 
-## Installation and Usage
+## How to Run
 
-This project doesn't require any build steps or additional dependencies. It uses CDN-hosted libraries for simplicity.
+1.  **Download/Clone:** Get all the project files (`.html`, `.js`).
+2.  **Directory:** Place all files (`index.html`, `galaxy-core.js`, etc.) together in the **same folder**.
+3.  **Browser:** Open `index.html` in a modern web browser (Chrome, Firefox, Edge recommended). An internet connection is needed for external libraries (`Three.js`, `3d-force-graph`).
+4.  **Explore:** Use the controls (now in the bottom-right panel) to generate galaxies and the mouse/sidebar to explore!
+
+## How does this work?
+
+This is essentially the realm of procedural generation. Instead of manually creating every single star and planet (which would take forever!), procedural generation uses **algorithms** (sets of rules and instructions) combined with **randomness** to create complex content automatically. We define the *rules* for how a star should form, how planets orbit, or what makes a planet habitable, and then let the computer generate the specific details based on those rules and random chance.
+
+This project shows a few key proc-gen ideas (and some that are salient for my lecture):
+
+1.  **Parameters & Randomness (`index.html`, `galaxy-core.js`, `galaxy-generator.js`):**
+    * The UI sliders (`index.html`) provide high-level **parameters**.
+    * `galaxy-generator.js` reads these parameters.
+    * Throughout the code (especially in `galaxy-classes.js`), `window.GalaxyCore.getRandomNumber()` and `window.GalaxyCore.getRandomElement()` are used to introduce **controlled randomness**. Notice how random numbers aren't just picked wildly, but often within specific ranges or based on probabilities (like `civProbability`).
+
+2.  **Rule-Based Systems (`galaxy-classes.js`):**
+    * Look at the `Star` and `Planet` classes. Their constructors are full of **rules**.
+    * *Example Rule (Planet Type):* The `determinePlanetType` method uses rules based on orbital distance and star luminosity to decide if a planet is likely molten, terrestrial, gas giant, etc.
+    * *Example Rule (Star Evolution):* `calculateEvolution` uses the star's mass and age to determine if it's main-sequence, a red giant, or another stage.
+
+3.  **Layered Generation (`galaxy-generator.js`):**
+    * Generation happens in **steps**: Stars first, then planets around stars, then civilizations on habitable planets.
+    * This layering allows dependencies: planet generation depends on the star's properties; civilization generation depends on the planet's properties.
+
+4.  **Shaping Functions (`galaxy-classes.js` - `generateCoordinates` methods):**
+    * The `generateSpiralCoordinates` and `generateEllipticalCoordinates` methods use mathematical functions (trigonometry, Gaussian distribution) combined with parameters and randomness to **shape** the distribution of stars, attempting to create something other than a uniform random cloud. This is a common technique in proc-gen.
+
+5.  **Data Representation (`galaxy-classes.js`):**
+    * The `Star`, `Planet`, `Civilization`, and `Artifact` classes act as **data structures** or blueprints. The proc-gen process fills in the specific properties for each instance of these classes.
+
+6.  **Emergence:**
+    * While not explicitly programmed, you might observe **emergent** patterns. Dense star clusters might form naturally from the coordinate algorithms. Chains of habitable planets might appear. Conflicts between civilizations with opposing traits might seem inevitable, even though only their initial relationship was determined by rules. This is the magic of complex systems arising from simpler rules!
 
 
-1. Open the `index.html` file in a web browser.
-2. The universe will be automatically generated and visualized.
-3. Use your mouse to interact with the 3D visualization:
-   - Left-click and drag to rotate the view
-   - Right-click and drag to pan
-   - Scroll to zoom in/out
-   - Double-click on any star, planet, or civilization to view its properties in the right panel.
-5. The bottom right panel shows an overview of the universe.
-6. Click the "Save to CSV" button to download the universe data as a CSV file.
+## Exploring the Code
 
+* **`galaxy-core.js`:** Start here to see base constants (like `LIMITS`, `SPECTRAL_TYPES`) and utility functions. Changing constants here directly affects generation outcomes.
+* **`galaxy-classes.js`:** The heart of the generation logic. Look at the `constructor` and helper methods within each class (`Star`, `Planet`, `Civilization`) to understand the rules. See how coordinate generation differs for galaxy types.
+* **`galaxy-generator.js`:** See how the overall process is orchestrated step-by-step and how modules are used together.
+* **`galaxy-visualization.js`:** Explore how the generated data is mapped to visual properties (color, size) and rendered using `3d-force-graph`.
+* **`galaxy-ui.js`:** See how user input is handled and how the different display panels are updated.
 
-## To-do
-
-1. Fix data export. Right now, the CSV that is exported is a very simple version of the more detailed CSVs that I generated with V1 and V2. Make it dump to proper csv or graphml.
-2. Data import. So that you can continuously revisit a generated universe. 
-3. See if we can make this better resemble a galaxy. Right now, the nature of the Force-directed visualization means that we get irregular galaxies. It would be nice to be able to do elliptical or spiral. Add the supermassive black hole at the center. This may require some overhauls in how stars connect to each other. 
-4. Generation settings.
-5. Improved name generation. V1 and V2 gave me scrabble sounding names which is fair because I lifted quite a bit of the syllables of scrabble words. V3 however gives me extremely boring names over and over again. So see if we can improve this a little bit by adding other languages, other syllable sets. 
-6. Big overhaul, see if we can visually make nodes resemble their properties.
-   
-## Customization
-
-You can customize the universe generation by modifying the following parameters in the `generateAndVisualizeUniverse` function:
-
-- Change the number of stars by modifying the argument in `generateUniverse(100)`.
-- Adjust the probability of civilization occurrence in the `attachCivilizations` function.
-- Modify the color scheme by changing the color values in the `processUniverseData` function.
-
-## Contributing
-
-Contributions to the Universe Generator are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## Acknowledgments
-
-- [3D Force-Directed Graph](https://github.com/vasturiano/3d-force-graph) library by Vasco Asturiano
-- [Three.js](https://threejs.org/) for 3D rendering
-
-## Contact
-
-If you have any questions, feel free to reach out to @yudhanjaya or open an issue in this repository.
+Have fun!
