@@ -15,7 +15,12 @@ and even civilizations!
 We define the *rules* for how a star should form, how planets orbit, or what makes a planet habitable, and then let the program generate the specific details based on rulesets and random chance. Of course, we take a lot of inspiration from games, especially the bigs ones - Stellaris, Endless Space II, Sins of a Solar Empire, and so on, as well as the Wikipedia page on star distributions. While we don't have anything remotely as complex as those game systems, you'll see certain tocuhes - like the policy selections for alien species - that make a lot of sense once you understand where I'm coming from.
 
 Here's a (low-res) demo of it in action: 
-https://github.com/user-attachments/assets/06d96fce-a27a-4a97-8984-97ef0b4c3fe5
+
+
+
+https://github.com/user-attachments/assets/76536ce7-1d21-4372-9247-e4221bb551b2
+
+
 
 ## Features
 
