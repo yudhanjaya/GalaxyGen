@@ -4,7 +4,7 @@
 
 This project is an interactive **procedural galaxy generator** built with JavaScript, HTML, and CSS. It creates unique, explorable 3D universes filled with stars, planets, and even fledgling civilizations right in your web browser.
 
-I built the original version in R; then over the years I made a couple of slow attempts to move everything to JavaScript. This version is the latest and greatest, built largely for a keynote at the University of Bergen in 2025. Look! We have stars, planets . . . 
+I built the original version in R; then over the years I made a couple of slow attempts to move everything to JavaScript. The idea was that I'd eventually use it for a novel I was writing (Salvage Crew, then Pilgrim Machines) but I never did. This version, resurrected and rewritten, is the latest and greatest, rebuilt largely for a keynote at the University of Bergen in 2025. Look! We have stars, planets . . . 
 
 ![Screenshot_1](https://github.com/user-attachments/assets/bcfdf6d4-64f3-477e-860e-039ca8b65730)
 
